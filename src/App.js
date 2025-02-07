@@ -312,53 +312,53 @@
 
 
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
 
-const DisplayImage = ({ userId }) => {
-  const [imageUrl, setImageUrl] = useState("");
-  const [message, setMessage] = useState("");
+// const DisplayImage = ({ userId }) => {
+//   const [imageUrl, setImageUrl] = useState("");
+//   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const response = await axios.get(`https://org.klizer.co/chart/get/c0ae5a46b7`, {
-          headers: {
-            Authorization: "Bearer 2dce55cfd5cf1570158b81e92297d1b209713",
-            "User-Token":
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJraXNob3JlQGdtYWlsLmNvbSIsImlkIjoiNjc3ZGY4YmY0NTc5NDZhMGJkZGJmYjBmIiwiZXhwIjoxNzM2MzExOTI3fQ.GgFffTDvjOnQ60PXzOGxShnbiyeg6u0qCsxB8gtrq2c",
-          },
-        });
-        console.log('====================================');
-        console.log(response.data?.data?.chart?.person?.img_url);
-        console.log('====================================');
+//   useEffect(() => {
+//     const fetchImage = async () => {
+//       try {
+//         const response = await axios.get(`https://org.klizer.co/chart/get/c0ae5a46b7`, {
+//           headers: {
+//             Authorization: "Bearer 2dce55cfd5cf1570158b81e92297d1b209713",
+//             "User-Token":
+//               "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJraXNob3JlQGdtYWlsLmNvbSIsImlkIjoiNjc3ZGY4YmY0NTc5NDZhMGJkZGJmYjBmIiwiZXhwIjoxNzM2MzExOTI3fQ.GgFffTDvjOnQ60PXzOGxShnbiyeg6u0qCsxB8gtrq2c",
+//           },
+//         });
+//         console.log('====================================');
+//         console.log(response.data?.data?.chart?.person?.img_url);
+//         console.log('====================================');
 
-        if (response.data?.data?.chart?.person?.img_url) {
-          setImageUrl(response.data.data.chart.person.img_url); // Set the image URL
-        } else {
-          setMessage("Image not found.");
-        }
-      } catch (error) {
-        console.error("Error fetching image:", error.response?.data || error.message);
-        setMessage("Error loading image.");
-      }
-    };
+//         if (response.data?.data?.chart?.person?.img_url) {
+//           setImageUrl(response.data.data.chart.person.img_url); // Set the image URL
+//         } else {
+//           setMessage("Image not found.");
+//         }
+//       } catch (error) {
+//         console.error("Error fetching image:", error.response?.data || error.message);
+//         setMessage("Error loading image.");
+//       }
+//     };
 
-    fetchImage();
-  }, [userId]);
+//     fetchImage();
+//   }, [userId]);
 
-  return (
-    <div>
-      {imageUrl ? (
-        <img src={imageUrl} alt="User profile" style={{ width: "300px", height: "300px" }} />
-      ) : (
-        <p>{message || "Loading image..."}</p>
-      )}
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       {imageUrl ? (
+//         <img src={imageUrl} alt="User profile" style={{ width: "300px", height: "300px" }} />
+//       ) : (
+//         <p>{message || "Loading image..."}</p>
+//       )}
+//     </div>
+//   );
+// };
 
-export default DisplayImage;
+// export default DisplayImage;
 
 
 
@@ -420,3 +420,224 @@ export default DisplayImage;
 // };
 
 // export default HtmlToImage;
+
+
+// --------------------------server side login------------------------
+
+import React, { useState } from "react";
+
+const App = () => {
+  const [userInfo, setUserInfo] = useState(null);
+
+  const handleLoginClick = async () => {
+    // Redirecting to the login endpoint (adjust the URL based on your backend)
+    window.location.href = 'http://127.0.0.1:5002/users/google-login';
+  };
+
+  const fetchUserInfo = async (code) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5002/users/auth_callback?code=${code}`);
+      const data = await response.json();
+      setUserInfo(data);  // Store the user's info (name and email)
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  // Check if the URL has the code parameter (after redirect)
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      fetchUserInfo(code); // Fetch user info after getting the authorization code
+    }
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Login with Google</h1>
+      <button className="google-login" onClick={handleLoginClick}>
+        <i className="fab fa-google icon"></i> Sign in with Google
+      </button>
+
+      
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+// import React from "react";
+// import { GoogleLogin } from "@react-oauth/google";
+
+// const clientId = "YOUR_GOOGLE_CLIENT_ID";
+
+// const GoogleLoginComponent = () => {
+//   const onSuccess = () => {
+//     window.location.href = "http://localhost:5002/google_login"; 
+//   };
+
+//   return (
+//     <div>
+//       <button onClick={onSuccess}>Login with Google</button>
+//     </div>
+//   );
+// };
+
+// export default GoogleLoginComponent;
+
+// import React from "react";
+// import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+// import axios from "axios";
+
+// const App = () => {
+//  const handleLoginSuccess = async (response) => {
+//   console.log("Credential Response:", response);
+//   const { credential } = response; // Get credential instead of code
+
+//   try {
+//     const res = await axios.post("http://localhost:5002/auth/google", 
+//       { token: credential }, 
+//       { withCredentials: true }
+//     );
+//     console.log("Login successful", res);
+//     // Store token in localStorage if needed
+//     localStorage.setItem("token", res.data.data.access_token);
+//   } catch (error) {
+//     console.error("Login failed", error.response.data);
+//   }
+// };
+
+
+//   const handleLoginFailure = (error) => {
+//     console.error("Login failed", error);
+//   };
+
+//   return (
+//     <GoogleOAuthProvider clientId="1026995151609-huoeo703c06m40o667tkc3poa6orlh7n.apps.googleusercontent.com">
+//       <div style={{ textAlign: "center", marginTop: "50px" }}>
+//         <h1>Login with Google</h1>
+//         <GoogleLogin
+//           onSuccess={handleLoginSuccess}
+//           onError={handleLoginFailure}
+//           useOneTap
+//         />
+
+//       </div>
+//     </GoogleOAuthProvider>
+//   );
+// };
+
+// export default App;
+
+// import React from 'react';
+//    import { GoogleLogin } from '@react-oauth/google';
+//    import { GoogleOAuthProvider } from '@react-oauth/google';
+//    import axios from 'axios';
+
+//    const GoogleLoginButton = ({ user, setUser }) => {
+
+//      const backendURL = "http://127.0.0.1:5002";
+//      const handleLoginSuccess = async (credentialResponse) => {
+//        try {
+//          // Send the credential response to the backend.
+//          const response = await axios.get(`${backendURL}/login`);
+
+//          // Redirect to the backend's /login endpoint (initiates OAuth)
+//          window.location.href = response.request.responseURL; //Important step
+//        } catch (error) {
+//          console.error("Login Error:", error);
+//        }
+//      };
+
+
+//      const handleLogout = async () => {
+//        try {
+//          await axios.get(`${backendURL}/logout`);
+//          setUser(null);
+//          console.log("Logout successful");
+//        } catch (error) {
+//          console.error("Logout Error", error);
+//        }
+//      }
+
+
+//      return (
+//        <GoogleOAuthProvider clientId="1026995151609-huoeo703c06m40o667tkc3poa6orlh7n.apps.googleusercontent.com">
+
+//        {user ? (
+//          <div>
+//            <p>Welcome, {user.name}!</p>
+//            {/* <GoogleLogout
+//              onLogoutSuccess={handleLogout}
+//              /> */}
+//          </div>
+//        ) : (
+//          <GoogleLogin
+//            onSuccess={handleLoginSuccess}
+//            onError={() => console.log('Login Failed')}
+//          />
+//        )}
+//        </GoogleOAuthProvider>
+//      );
+//    };
+
+//    export default GoogleLoginButton;
+
+// // --------------------------------------------------working--------------------------------------------------------
+// import React, { useState } from "react";
+// import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+
+
+// const App = () => {
+//   const [user, setUser] = useState(null);
+
+//   const handleLoginSuccess = (response) => {
+//     console.log("Google Response:", response); // Debugging
+//       if (!response.credential) {
+//         console.error("No credential received");
+//         return;
+//       }
+//       // Send the token to your FastAPI backend for verification
+//       fetch("http://localhost:5002/auth/google", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           token: response.credential,
+//         }),
+//       })
+//       .then(res => res.json())
+//       .then(data => {
+//         console.log("Server Response:", data);
+//       })
+//       .catch(err => console.error("Error:", err));
+//   };
+
+//   return (
+//     <div>
+//       <h1>Google Login</h1>
+//       {!user ? (
+//       <GoogleOAuthProvider clientId="1026995151609-huoeo703c06m40o667tkc3poa6orlh7n.apps.googleusercontent.com">
+//       <GoogleLogin
+//           onSuccess={handleLoginSuccess}
+//           onError={() => console.log("Login Failed")}
+//         />
+//         </GoogleOAuthProvider>
+//       ) : (
+//         <div>
+//           <h2>Welcome, {user.name}</h2>
+//           <p>Email: {user.email}</p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default App;
